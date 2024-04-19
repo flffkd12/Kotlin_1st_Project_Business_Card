@@ -1,5 +1,6 @@
 package com.example.practice
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.webkit.WebSettings.TextSize
 import androidx.activity.ComponentActivity
@@ -14,26 +15,46 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.key.Key.Companion.D
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.VerticalAlignmentLine
 import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -51,9 +72,9 @@ class MainActivity : ComponentActivity() {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color.LightGray
+                    color = Color.White
                 ) {
-                    BusinessCard()
+                    ArtSpaceApp()
                 }
             }
         }
@@ -61,66 +82,126 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MyInformationBottom(
-    imageVector: ImageVector,
-    contentDescription : String,
-    text:String
+fun Screen(
+    text: String,
+    contentDescription: String,
+    author: String,
+    image: Painter,
+    onPreviousClick: () -> Unit,
+    onNextClick: () -> Unit,
+    modifier: Modifier
 ) {
-    Row (verticalAlignment = Alignment.CenterVertically){
-        Icon(imageVector = imageVector , contentDescription = contentDescription, tint = Color(0xFF3ddc84))
-        Spacer(modifier = Modifier
-            .width(24.dp)
-            .padding(top = 16.dp, bottom = 16.dp))
-        Text(text = text)
-    }
-}
-
-@Composable
-fun BusinessCard(
-    modifier: Modifier = Modifier) {
-    val image = painterResource(id = R.drawable.android_logo)
     Column (
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = modifier.fillMaxSize()
-    ){
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(40.dp),
+        verticalArrangement = Arrangement.SpaceEvenly,
+    ) {
         Image(
             painter = image,
-            contentDescription = "안드로이드 로고",
+            contentDescription = contentDescription,
             contentScale = ContentScale.Crop,
-            modifier = modifier.size(width =100.dp, height =100.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(440.dp)
         )
-        Text(
-            text = stringResource(id = R.string.my_name),
-            fontSize = 40.sp,
-            modifier = modifier.padding(bottom = 16.dp)
-        )
-        Text(
-            text = stringResource(id = R.string.title),
-            color = Color(0xFF3ddc84),
-            fontWeight = FontWeight.Bold
-        )
-    }
+        Spacer(modifier = modifier.size(16.dp))
 
-    Column(
-       horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Bottom,
-        modifier = modifier
-            .fillMaxSize()
-            .padding(bottom = 32.dp)
-    ) {
-        Column {
-            MyInformationBottom(Icons.Filled.Phone, "전화번호", "(+82) 010-3397-8663")
-            MyInformationBottom(Icons.Filled.Share, "공유", "@AndroidDev")
-            MyInformationBottom(Icons.Filled.Email, "이메일", "flffkd12@gmail.com")
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .background(color = Color.LightGray)
+                .padding(16.dp)
+        ) {
+            Column(
+                modifier = modifier.height(100.dp)
+            ) {
+                Text(
+                    text = text,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                    fontSize = 24.sp,
+                )
+                Spacer(modifier = modifier.height(4.dp))
+                Text(
+                    text = author,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Gray,
+                    fontSize = 16.sp,
+                )
+            }
+        }
+        Row (
+            horizontalArrangement = Arrangement.spacedBy(80.dp,Alignment.CenterHorizontally),
+            modifier=modifier.fillMaxWidth()
+        ){
+            Button(
+                onClick = onPreviousClick,
+                modifier = Modifier
+                    .width(120.dp)
+                    .height(40.dp)
+            ) {
+                Text(text = "Previous")
+            }
+            Button(
+                onClick = onNextClick,
+                modifier = Modifier
+                    .width(120.dp)
+                    .height(40.dp)
+            ) {
+                Text(text = "Next")
+            }
         }
     }
 }
+@Composable
+fun ArtSpaceView(modifier: Modifier = Modifier) {
+    var screenNum by remember { mutableIntStateOf(1) }
+
+    when(screenNum){
+        1 -> {
+            Screen(
+                text = stringResource(id = R.string.Maple1_text),
+                contentDescription = stringResource(id = R.string.Maple1_content_description),
+                author = stringResource(id = R.string.Maple1_author),
+                image = painterResource(id = R.drawable.maple1),
+                onPreviousClick = { screenNum = 3 },
+                onNextClick = { screenNum = 2},
+                modifier = modifier
+            )
+        }
+        2-> {
+            Screen(
+                text = stringResource(id = R.string.Maple2_text),
+                contentDescription = stringResource(id = R.string.Maple2_content_description),
+                author = stringResource(id = R.string.Maple2_author),
+                image = painterResource(id = R.drawable.maple2),
+                onPreviousClick = { screenNum = 1 },
+                onNextClick = { screenNum = 3},
+                modifier = modifier
+            )
+        }
+        3-> {
+            Screen(
+                text = stringResource(id = R.string.Maple3_text),
+                contentDescription = stringResource(id = R.string.Maple3_content_description),
+                author = stringResource(id = R.string.Maple3_author),
+                image = painterResource(id = R.drawable.maple3),
+                onPreviousClick = { screenNum = 2 },
+                onNextClick = { screenNum = 1},
+                modifier = modifier
+            )
+        }
+        else -> {}
+    }
+}
+
+
 
 @Preview(showBackground = false)
 @Composable
-fun TaskPreview() {
+fun ArtSpaceApp() {
     PracticeTheme {
-        BusinessCard()
+        ArtSpaceView()
     }
 }

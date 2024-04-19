@@ -1,5 +1,12 @@
 <resources>
     <string name="app_name">Practice</string>
-    <string name="title">Android Developer Beginner</string>
-    <string name="my_name">Dong Hyuk Chang</string>
+    <string name="Maple1_text">Maplestory level 210</string>
+    <string name="Maple2_text">Maplestroy level 257</string>
+    <string name="Maple3_text">Maplestory monster collection</string>
+    <string name="Maple1_content_description">210</string>
+    <string name="Maple2_content_description">257</string>
+    <string name="Maple3_content_description">Monster Collection</string>
+    <string name="Maple1_author">천천히살살해 (2023)</string>
+    <string name="Maple2_author">눈꽃샛별이 (2024)</string>
+    <string name="Maple3_author">Sub Character (2024)</string>
 </resources>
